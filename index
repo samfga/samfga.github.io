@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>號碼抽獎</title>
+    <style>
+        body {
+            background-color: black;
+            color: orange;
+            font-family: Arial, sans-serif;
+        }
+        .input-area {
+            margin-bottom: 20px;
+        }
+        .button {
+            background-color: orange;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .result-area {
+            border: 1px solid orange;
+            padding: 20px;
+            margin-top: 20px;
+            width: 80%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            min-height: 300px;
+        }
+        /* Style for the numbers */
+        .number {
+            display: inline-block;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            margin: 2px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5), inset 0 -4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .red { background: radial-gradient(circle at center, #ff0000, #800000); }
+        .green { background: radial-gradient(circle at center, #00ff00, #008000); }
+        .blue { background: radial-gradient(circle at center, #0000ff, #000080); }
+    </style>
+</head>
+<body>
+    <div class="input-area">
+        <label for="num">輸入要抽取的號碼數量 (1-49):</label>
+        <input type="number" id="num" min="1" max="49" value="6" required><br><br>
+        <label for="times">輸入要抽取的次數:</label>
+        <input type="number" id="times" min="1" value="5" required>
+    </div>
+    <button class="button" onclick="drawNumbers()">按《抽獎》</button>
+
+    <div class="result-area" id="result">
+        <!-- 結果將顯示在這裡 -->
+    </div>
+
+    <script>
+        function drawNumbers() {
+            let num = parseInt(document.getElementById('num').value);
+            let times = parseInt(document.getElementById('times').value);
+            let resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; // 清空之前的結果
+
+            if (isNaN(num) || isNaN(times) || num < 1 || num > 49 || times < 1) {
+                resultDiv.innerHTML = '請提醒輸入錯誤。';
+            } else if (num * times > 49) {
+                if (num === 6 && times === 9) {
+                    resultDiv.innerHTML = '輸入要抽取的號碼數量6<br>輸入要抽取的次數9<br>請提醒6x9=54，只能不超過49。';
+                } else if (num === 7 && times === 11) {
+                    resultDiv.innerHTML = '輸入要抽取的號碼數量7<br>輸入要抽取的次數11<br>請提醒7x11=77，只能不超過49。';
+                } else {
+                    resultDiv.innerHTML = `請提醒輸入錯誤。${num} x ${times} = ${num * times}，只能不超過49。`;
+                }
+            } else {
+                let numbers = Array.from({length: 49}, (_, i) => i + 1);
+                for (let i = 0; i < times; i++) {
+                    let drawnNumbers = [];
+                    numbers = Array.from({length: 49}, (_, i) => i + 1); // Reset numbers for each draw
+                    for (let j = 0; j < num; j++) {
+                        let index = Math.floor(Math.random() * numbers.length);
+                        drawnNumbers.push(numbers.splice(index, 1)[0]);
+                    }
+                    drawnNumbers.sort((a, b) => a - b);
+                    let color = i % 2 === 0 ? 'orange' : 'green';
+                    resultDiv.innerHTML += `<p style="color:${color};">第 ${i+1} 次抽獎結果:</p>`;
+                    resultDiv.innerHTML += `<p>`;
+                    drawnNumbers.forEach(number => {
+                        let colorClass = getColorClass(number);
+                        resultDiv.innerHTML += `<span class="number ${colorClass}">${number}</span>`;
+                    });
+                    resultDiv.innerHTML += `</p>`;
+                }
+            }
+        }
+
+        function getColorClass(number) {
+            if ([1, 2, 7, 8, 12, 13, 18, 19, 23, 24, 29, 30, 34, 35, 40, 45, 46].includes(number)) {
+                return 'red';
+            } else if ([5, 6, 11, 16, 17, 21, 22, 27, 28, 32, 33, 38, 39, 43, 44, 49].includes(number)) {
+                return 'green';
+            } else {
+                return 'blue';
+            }
+        }
+    </script>
+</body>
+</html>
